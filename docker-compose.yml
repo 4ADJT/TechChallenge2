@@ -1,0 +1,53 @@
+services:
+
+  ez-eureka-server:
+    build:
+      context: ./Ez-Eureka-Server
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - ezblue-network
+
+  ez-gatway:
+    build:
+      context: ./Ez-Gatway
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
+    depends_on:
+      - ez-eureka-server
+    networks:
+      - ezblue-network
+
+  ez-client-service:
+    build:
+      context: ./Ez-Client-Services
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
+    depends_on:
+      - ez-eureka-server
+      - ez-gatway
+    networks:
+      - ezblue-network
+
+  ez-blue-service:
+    build:
+      context: ./Ez-Blue-Services
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
+  
+    networks:
+      - ezblue-network
+
+networks:
+  ezblue-network:
+    driver: bridge
