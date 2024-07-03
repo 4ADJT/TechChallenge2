@@ -1,0 +1,12 @@
+[submodule "Ez-Client-Services"]
+	path = Ez-Client-Services
+	url = https://github.com/4ADJT/Ez-Client-Services
+[submodule "Ez-Blue-Services"]
+	path = Ez-Blue-Services
+	url = https://github.com/4ADJT/Ez-Blue-Services
+[submodule "Ez-Gateway-Services"]
+	path = Ez-Gateway-Services
+	url = https://github.com/4ADJT/Ez-Gateway-Services
+[submodule "Ez-Eureka-Server"]
+	path = Ez-Eureka-Server
+	url = https://github.com/4ADJT/Ez-Eureka-Server
