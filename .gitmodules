@@ -1,12 +1,16 @@
 [submodule "Ez-Client-Services"]
 	path = Ez-Client-Services
 	url = https://github.com/4ADJT/Ez-Client-Services
+	branch = main
 [submodule "Ez-Blue-Services"]
 	path = Ez-Blue-Services
 	url = https://github.com/4ADJT/Ez-Blue-Services
+	branch = main
 [submodule "Ez-Gateway-Services"]
 	path = Ez-Gateway-Services
 	url = https://github.com/4ADJT/Ez-Gateway-Services
+	branch = main
 [submodule "Ez-Eureka-Server"]
 	path = Ez-Eureka-Server
 	url = https://github.com/4ADJT/Ez-Eureka-Server
+	branch = main
