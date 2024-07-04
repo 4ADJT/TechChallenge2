@@ -13,6 +13,7 @@ services:
       - ezblue-network
 
   ez-eureka-server:
+    restart: always
     build:
       context: ./Ez-Eureka-Server
       dockerfile: Dockerfile
@@ -26,6 +27,7 @@ services:
       - dbpostgres
 
   ez-gatway:
+    restart: always  
     build:
       context: ./Ez-Gateway-Services
       dockerfile: Dockerfile
@@ -41,6 +43,7 @@ services:
       - ez-eureka-server
 
   ez-blue-service:
+    restart: always
     build:
       context: ./Ez-Blue-Services
       dockerfile: Dockerfile
@@ -57,6 +60,7 @@ services:
       - ez-gatway
 
   ez-client-service:
+    restart: always
     build:
       context: ./Ez-Client-Services
       dockerfile: Dockerfile
