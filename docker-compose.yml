@@ -1,52 +1,81 @@
 services:
 
+  dbpostgres:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ez_client_services
+    ports:
+      - 5432:5432
+    networks:
+      - ezblue-network
+
   ez-eureka-server:
     build:
       context: ./Ez-Eureka-Server
       dockerfile: Dockerfile
     ports:
-      - "8761:8761"
+      - 8761:8761
+    links:
+      - dbpostgres
     networks:
       - ezblue-network
+    depends_on:
+      - dbpostgres
 
   ez-gatway:
     build:
-      context: ./Ez-Gatway
+      context: ./Ez-Gateway-Services
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - 8080:8080
+    links:
+      - dbpostgres      
     environment:
       - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
-    depends_on:
-      - ez-eureka-server
     networks:
       - ezblue-network
-
-  ez-client-service:
-    build:
-      context: ./Ez-Client-Services
-      dockerfile: Dockerfile
-    ports:
-      - "8082:8082"
-    environment:
-      - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
     depends_on:
       - ez-eureka-server
-      - ez-gatway
-    networks:
-      - ezblue-network
 
   ez-blue-service:
     build:
       context: ./Ez-Blue-Services
       dockerfile: Dockerfile
     ports:
-      - "8081:8081"
+      - 8081:8081
+    links:
+      - dbpostgres
     environment:
       - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
-  
     networks:
       - ezblue-network
+    depends_on:
+      - ez-eureka-server
+      - ez-gatway
+
+  ez-client-service:
+    build:
+      context: ./Ez-Client-Services
+      dockerfile: Dockerfile
+    ports:
+      - 8082:8082
+    links:
+      - dbpostgres
+    environment:
+      - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgres:5432/ez_client_services
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    networks:
+      - ezblue-network
+    depends_on:
+      - ez-eureka-server
+      - ez-gatway
+      - ez-blue-service
 
 networks:
   ezblue-network:
