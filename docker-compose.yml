@@ -9,6 +9,12 @@ services:
       - POSTGRES_DB=ez_client_services
     ports:
       - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ez_client_services"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
     networks:
       - ezblue-network
 
@@ -21,10 +27,34 @@ services:
       - MONGO_INITDB_DATABASE=ezblue
     ports:
       - 27017:27017
+    healthcheck:
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     volumes:
     - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
       - ezblue-network
+
+  # mongo-express:
+  #   image: mongo-express
+  #   restart: always
+  #   links:
+  #     - mongodb
+  #   ports:
+  #     - 8083:8083
+  #   depends_on:
+  #     mongodb:
+  #         condition: service_healthy
+  #         restart: true
+  #   environment:
+  #       - ME_CONFIG_MONGODB_URL=mongodb://mongo:mongo@mongodb:27017/
+  #       - ME_CONFIG_BASICAUTH=false
+  #       - PORT=8083
+  #   networks:
+  #     - ezblue-network
 
   ez-eureka-server:
     restart: always
@@ -34,7 +64,17 @@ services:
     ports:
       - 8761:8761
     depends_on:
-      - dbpostgres
+      dbpostgres:
+        condition: service_healthy
+        restart: true
+      mongodb:
+        condition: service_healthy
+        restart: true
+    healthcheck:
+      test: ["CMD-SHELL", "apt-get -y update; apt-get -y install curl; curl -f http://localhost:8761"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
     networks:
       - ezblue-network
 
@@ -50,7 +90,9 @@ services:
     environment:
       - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
     depends_on:
-      - ez-eureka-server
+      ez-eureka-server:
+        condition: service_healthy
+        restart: true
     networks:
       - ezblue-network
 
@@ -66,8 +108,16 @@ services:
       - ez-gatway
     environment:
       - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgres:5432/ez_client_services
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
-      - ez-gatway
+      ez-eureka-server:
+        condition: service_healthy
+        restart: true
+      ez-gatway:
+        condition: service_started
     networks:
       - ezblue-network
 
@@ -88,7 +138,11 @@ services:
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
-      - ez-gatway
+      ez-eureka-server:
+        condition: service_healthy
+        restart: true
+      ez-gatway:
+        condition: service_started
     networks:
       - ezblue-network
 
