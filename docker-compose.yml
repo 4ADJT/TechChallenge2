@@ -12,6 +12,20 @@ services:
     networks:
       - ezblue-network
 
+  mongodb:
+    image: mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=mongo
+      - MONGO_INITDB_DATABASE=ezblue
+    ports:
+      - 27017:27017
+    volumes:
+    - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - ezblue-network
+
   ez-eureka-server:
     restart: always
     build:
@@ -19,12 +33,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8761:8761
-    links:
+    depends_on:
       - dbpostgres
     networks:
       - ezblue-network
-    depends_on:
-      - dbpostgres
 
   ez-gatway:
     restart: always  
@@ -34,13 +46,13 @@ services:
     ports:
       - 8080:8080
     links:
-      - dbpostgres      
+      - ez-eureka-server  
     environment:
       - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
-    networks:
-      - ezblue-network
     depends_on:
       - ez-eureka-server
+    networks:
+      - ezblue-network
 
   ez-blue-service:
     restart: always
@@ -51,13 +63,13 @@ services:
       - 8081:8081
     links:
       - dbpostgres
+      - ez-gatway
     environment:
       - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
+    depends_on:
+      - ez-gatway
     networks:
       - ezblue-network
-    depends_on:
-      - ez-eureka-server
-      - ez-gatway
 
   ez-client-service:
     restart: always
@@ -68,18 +80,17 @@ services:
       - 8082:8082
     links:
       - dbpostgres
+      - ez-gatway
     environment:
       - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgres:5432/ez_client_services
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - ez-gatway
     networks:
       - ezblue-network
-    depends_on:
-      - ez-eureka-server
-      - ez-gatway
-      - ez-blue-service
 
 networks:
   ezblue-network:
