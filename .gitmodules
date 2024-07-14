@@ -14,3 +14,6 @@
 	path = Ez-Eureka-Server
 	url = https://github.com/4ADJT/Ez-Eureka-Server
 	branch = main
+[submodule "BoundaryService"]
+	path = BoundaryService
+	url = https://github.com/4ADJT/BoundaryService
