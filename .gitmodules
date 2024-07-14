@@ -17,3 +17,4 @@
 [submodule "BoundaryService"]
 	path = BoundaryService
 	url = https://github.com/4ADJT/BoundaryService
+	branch = main

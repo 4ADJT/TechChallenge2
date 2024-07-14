@@ -18,7 +18,7 @@ services:
     networks:
       - ezblue-network
 
-  mongodb:
+  mongo-blue:
     image: mongo
     restart: always
     environment:
@@ -38,24 +38,6 @@ services:
     networks:
       - ezblue-network
 
-  # mongo-express:
-  #   image: mongo-express
-  #   restart: always
-  #   links:
-  #     - mongodb
-  #   ports:
-  #     - 8083:8083
-  #   depends_on:
-  #     mongodb:
-  #         condition: service_healthy
-  #         restart: true
-  #   environment:
-  #       - ME_CONFIG_MONGODB_URL=mongodb://mongo:mongo@mongodb:27017/
-  #       - ME_CONFIG_BASICAUTH=false
-  #       - PORT=8083
-  #   networks:
-  #     - ezblue-network
-
   ez-eureka-server:
     restart: always
     build:
@@ -67,7 +49,7 @@ services:
       dbpostgres:
         condition: service_healthy
         restart: true
-      mongodb:
+      mongo-blue:
         condition: service_healthy
         restart: true
     healthcheck:
@@ -106,6 +88,7 @@ services:
     links:
       - dbpostgres
       - ez-gatway
+      - boundary-service
     environment:
       - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgres:5432/ez_client_services
@@ -131,6 +114,7 @@ services:
     links:
       - dbpostgres
       - ez-gatway
+      - boundary-service
     environment:
       - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgres:5432/ez_client_services
@@ -143,6 +127,27 @@ services:
         restart: true
       ez-gatway:
         condition: service_started
+    networks:
+      - ezblue-network
+
+  boundary-service:
+    restart: always
+    build:
+      context: ./BoundaryService
+      dockerfile: Dockerfile
+    ports:
+      - 8085:8085
+    links:
+      - mongo-blue
+      - ez-gatway
+    depends_on:
+      ez-eureka-server:
+        condition: service_healthy
+        restart: true
+      ez-gatway:
+        condition: service_started
+      mongo-blue:
+        condition: service_healthy
     networks:
       - ezblue-network
 
