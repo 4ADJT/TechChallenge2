@@ -48,10 +48,8 @@ services:
     depends_on:
       dbpostgres:
         condition: service_healthy
-        restart: true
       mongo-blue:
         condition: service_healthy
-        restart: true
     healthcheck:
       test: ["CMD-SHELL", "apt-get -y update; apt-get -y install curl; curl -f http://localhost:8761"]
       interval: 10s
@@ -74,7 +72,6 @@ services:
     depends_on:
       ez-eureka-server:
         condition: service_healthy
-        restart: true
     networks:
       - ezblue-network
 
@@ -98,7 +95,6 @@ services:
     depends_on:
       ez-eureka-server:
         condition: service_healthy
-        restart: true
       ez-gatway:
         condition: service_started
     networks:
@@ -124,7 +120,6 @@ services:
     depends_on:
       ez-eureka-server:
         condition: service_healthy
-        restart: true
       ez-gatway:
         condition: service_started
     networks:
@@ -143,7 +138,6 @@ services:
     depends_on:
       ez-eureka-server:
         condition: service_healthy
-        restart: true
       ez-gatway:
         condition: service_started
       mongo-blue:
