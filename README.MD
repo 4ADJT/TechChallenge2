@@ -8,7 +8,7 @@ Após o repositório principal, será necessário trazer os módulos presentes n
 
  - "***git submodule status***" - Possibilita checar o status atual de todos os submódulos, além de suas branchs definidas.
 
- - "***git submodule update --recursive --remote***" - Faz a obtenção de todos os arquivos dos submódulos para execução do pacote completo.
+ - "***git submodule update --init --recursive --remote***" - Faz a obtenção de todos os arquivos dos submódulos para execução do pacote completo.
 
 ## Execução
 
