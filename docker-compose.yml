@@ -15,6 +15,8 @@ services:
       retries: 5
       start_period: 30s
       timeout: 10s
+    volumes:
+      - ./docker-entrypoint-initdb.d/initial.sql:/docker-entrypoint-initdb.d/initial.sql
     networks:
       - ezblue-network
 
@@ -88,10 +90,11 @@ services:
       - boundary-service
     environment:
       - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgres:5432/ez_client_services
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - DATASOURCE_URL=jdbc:postgresql://dbpostgres:5432/ez_management_services
+      - DATASOURCE_USERNAME=postgres
+      - DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SERVER_PORT=8081
     depends_on:
       ez-eureka-server:
         condition: service_healthy
@@ -113,10 +116,11 @@ services:
       - boundary-service
     environment:
       - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgres:5432/ez_client_services
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - DATASOURCE_URL=jdbc:postgresql://dbpostgres:5432/ez_client_services
+      - DATASOURCE_USERNAME=postgres
+      - DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SERVER_PORT=8082
     depends_on:
       ez-eureka-server:
         condition: service_healthy
