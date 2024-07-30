@@ -139,6 +139,8 @@ services:
     links:
       - mongo-blue
       - ez-gatway
+    environment:
+      - EUREKA_SERVER=http://ez-eureka-server:8761/eureka/
     depends_on:
       ez-eureka-server:
         condition: service_healthy
