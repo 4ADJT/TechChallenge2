@@ -21,7 +21,7 @@ services:
       - ezblue-network
 
   mongo-blue:
-    image: mongo
+    image: mongodb/mongodb-community-server
     restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=mongo
