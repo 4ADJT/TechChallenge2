@@ -24,9 +24,9 @@ services:
     image: mongodb/mongodb-community-server
     restart: always
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=mongo
-      - MONGO_INITDB_ROOT_PASSWORD=mongo
-      - MONGO_INITDB_DATABASE=ezblue
+      - MONGODB_INITDB_ROOT_USERNAME=mongo
+      - MONGODB_INITDB_ROOT_PASSWORD=mongo
+      - MONGODB_INITDB_DATABASE=ezblue
     ports:
       - 27017:27017
     healthcheck:
